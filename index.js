@@ -14,9 +14,8 @@ import userRoutes from "./routes/users.js"
 import postRoutes from "./routes/posts.js"
 import {createPost} from "./controllers/posts.js"
 import { verifyToken } from "./middleware/auth.js";
-import User from "./models/user.js";
-import Post from "./models/post.js";
-import { users,posts } from "./data/index.js";
+import { uploadImage } from "./middleware/uploadImage.js";
+ 
 
 // Configurations
 const __filename=fileURLToPath(import.meta.url)
@@ -42,12 +41,11 @@ const storage= multer.diskStorage({
         cb(null,file.originalname)
     }
 })  
-const upload=multer({storage})
-
+const upload=multer({storage:multer.memoryStorage()})
 
 //Routes with files
-app.post("/auth/register",upload.single('picture'),register)
-app.post("/posts",verifyToken,upload.single('picture'),createPost)
+app.post("/auth/register",upload.single('picture'),uploadImage,register)
+app.post("/posts",verifyToken,upload.single('picture'),uploadImage,createPost)
 
 //Routes
 app.use("/auth",authRoutes)
